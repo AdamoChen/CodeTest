@@ -21,9 +21,9 @@ public class ShutdownTest {
         // 队列里的任务没有执行完就直接关闭
         //es.shutdownNow();
         // 队列里任务会执行完后才会关闭
-        es.shutdown();
 
-        System.out.println("关闭操作后： " + new Date());
+        //es.shutdown();
+        //System.out.println("关闭操作后： " + new Date());
         // java.util.concurrent.RejectedExecutionException 关闭后添加任务会抛异常
         // es.execute(new Task(new Date()));
     }
@@ -42,20 +42,28 @@ class Work implements Runnable{
             try {
                 //Thread.sleep(1000);
                 i++;
-                es.execute(new Task(new Date()));
+                es.execute(new Task(new Date(), System.currentTimeMillis()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        es.shutdown();
+        System.out.println("关闭操作后2： " + new Date());
     }
 }
 
 class Task implements Runnable{
 
     Date date;
+    Long time;
 
     public Task(Date date) {
         this.date = date;
+    }
+
+    public Task(Date date, Long time) {
+        this.date = date;
+        this.time = time;
     }
 
     public void run() {
@@ -64,6 +72,6 @@ class Task implements Runnable{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(date);
+        System.out.println(date + " <--> " + time);
     }
 }
